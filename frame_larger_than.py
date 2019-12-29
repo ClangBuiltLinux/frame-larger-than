@@ -23,6 +23,10 @@ def is_ptr(DIE):
     return DIE.tag == 'DW_TAG_pointer_type'
 
 
+def is_inlined(DIE):
+    return DIE.tag == 'DW_TAG_inlined_subroutine'
+
+
 def get_name(DIE):
     if 'DW_AT_name' in DIE.attributes:
         return DIE.attributes['DW_AT_name'].value.decode('UTF-8')
@@ -83,6 +87,7 @@ def print_var(dwarf_info, DIE):
         # print(type_info)
         pointed_to_type = find_type_info(dwarf_info, get_type_value(type_info))
         # print(pointed_to_type)
+        # TODO: get ptr size?
         print('\t%d\t%s*\t%s' % (8, get_name(pointed_to_type), get_name(DIE)))
     else:
         print('\t%s' % get_name(DIE))
@@ -98,7 +103,10 @@ def parse_file(dwarf_info, fn_name):
                     return
                 elif is_var(DIE):
                     print_var(dwarf_info, DIE)
-                # TODO: DW_TAG_inlined_subroutine ?
+                elif is_inlined(DIE):
+                    type_value = DIE.attributes['DW_AT_abstract_origin'].value
+                    ti = find_type_info(dwarf_info, type_value)
+                    parse_file(dwarf_info, get_name(ti))
                 # else:
                     # print(DIE)
             elif is_dw_fn(DIE, fn_name):

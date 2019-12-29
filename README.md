@@ -18,7 +18,13 @@ kvm_send_ipi_mask_allbutself:
         8       *       local_mask
         4       int     pscr_ret__
         4       int     pfo_ret__
+cpumask_copy:
+bitmap_copy:
         4       unsigned int    len
+        4       unsigned int    len
+cpumask_clear_cpu:
+clear_bit:
+arch_clear_bit:
 ```
 
 ## Dependencies
