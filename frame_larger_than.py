@@ -6,17 +6,22 @@ from elftools.elf.elffile import ELFFile, ELFError
 def is_fn(DIE):
     return DIE.tag == 'DW_TAG_subprogram'
 
+
 def is_var(DIE):
     return DIE.tag == 'DW_TAG_variable'
+
 
 def is_struct(DIE):
     return DIE.tag == 'DW_TAG_structure_type'
 
+
 def is_base_type(DIE):
     return DIE.tag == 'DW_TAG_base_type'
 
+
 def is_ptr(DIE):
     return DIE.tag == 'DW_TAG_pointer_type'
+
 
 def get_name(DIE):
     if 'DW_AT_name' in DIE.attributes:
@@ -37,6 +42,7 @@ def get_byte_size(DIE):
         return DIE.attributes['DW_AT_byte_size'].value
     else:
         return 0
+
 
 def is_abstract(DIE):
     return 'DW_AT_abstract_origin' in DIE.attributes
@@ -68,9 +74,11 @@ def print_var(dwarf_info, DIE):
     type_info = find_type_info(dwarf_info, type_value)
     # TODO: recurse ptr and const types
     if is_struct(type_info):
-        print('\t%d\tstruct %s\t%s' % (get_byte_size(type_info), get_name(type_info), get_name(DIE)))
+        print('\t%d\tstruct %s\t%s' %
+              (get_byte_size(type_info), get_name(type_info), get_name(DIE)))
     elif is_base_type(type_info):
-        print('\t%d\t%s\t%s' % (get_byte_size(type_info), get_name(type_info), get_name(DIE)))
+        print('\t%d\t%s\t%s' %
+              (get_byte_size(type_info), get_name(type_info), get_name(DIE)))
     elif is_ptr(type_info):
         # print(type_info)
         pointed_to_type = find_type_info(dwarf_info, get_type_value(type_info))
@@ -96,6 +104,7 @@ def parse_file(dwarf_info, fn_name):
             elif is_dw_fn(DIE, fn_name):
                 found_fn_name = True
                 print('%s:' % get_name(DIE))
+
 
 if __name__ == '__main__':
     if len(sys.argv) == 3:

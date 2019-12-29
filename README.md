@@ -26,3 +26,9 @@ kvm_send_ipi_mask_allbutself:
 ```sh
 $ sudo -H pip3 install pyelftools
 ```
+
+## Formatting
+```sh
+$ pip3 install pyformat
+$ pyformat --in-place frame_larger_than.py
+```
