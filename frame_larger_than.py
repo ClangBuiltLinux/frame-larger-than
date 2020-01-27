@@ -80,6 +80,8 @@ def find_type_info(dwarf_info, value):
 def get_type_string(dwarf_info, type_info):
     if is_ptr(type_info):
         pointed_to_type = find_type_info(dwarf_info, get_type_value(type_info))
+        if pointed_to_type is None:
+            return 'void*'
         return get_type_string(dwarf_info, pointed_to_type) + '*'
     elif is_array(type_info):
         pointed_to_type = find_type_info(dwarf_info, get_type_value(type_info))
