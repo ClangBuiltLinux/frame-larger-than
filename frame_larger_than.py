@@ -27,6 +27,10 @@ def is_inlined(DIE):
     return DIE.tag == 'DW_TAG_inlined_subroutine'
 
 
+def is_const(DIE):
+    return DIE.tag == 'DW_TAG_const_type'
+
+
 def get_name(DIE):
     if 'DW_AT_name' in DIE.attributes:
         return DIE.attributes['DW_AT_name'].value.decode('UTF-8')
@@ -41,9 +45,11 @@ def get_type_value(DIE):
         return 0
 
 
-def get_byte_size(DIE):
+def get_byte_size(dwarf_info, DIE):
     if 'DW_AT_byte_size' in DIE.attributes:
         return DIE.attributes['DW_AT_byte_size'].value
+    elif is_ptr(DIE):
+        return dwarf_info.config.default_address_size
     else:
         return 0
 
@@ -67,6 +73,24 @@ def find_type_info(dwarf_info, value):
                 return DIE
 
 
+def get_type_string(dwarf_info, type_info):
+    if is_ptr(type_info):
+        pointed_to_type = find_type_info(dwarf_info, get_type_value(type_info))
+        return get_type_string(dwarf_info, pointed_to_type) + '*'
+    elif is_const(type_info):
+        pointed_to_type = find_type_info(dwarf_info, get_type_value(type_info))
+        return 'const ' + get_type_string(dwarf_info, pointed_to_type)
+    elif is_struct(type_info):
+        return 'struct ' + get_name(type_info)
+    elif is_base_type(type_info):
+        return get_name(type_info)
+    else:
+        print('Unsupported type info for %s, implement me!' % (get_name(type_info)),
+                file=sys.stderr)
+        print(type_info, file=sys.stderr)
+
+
+
 def print_var(dwarf_info, DIE):
     # print(DIE)
     if is_abstract(DIE):
@@ -76,23 +100,10 @@ def print_var(dwarf_info, DIE):
         return
     type_value = get_type_value(DIE)
     type_info = find_type_info(dwarf_info, type_value)
-    # TODO: recurse ptr and const types
-    if is_struct(type_info):
-        print('\t%d\tstruct %s\t%s' %
-              (get_byte_size(type_info), get_name(type_info), get_name(DIE)))
-    elif is_base_type(type_info):
-        print('\t%d\t%s\t%s' %
-              (get_byte_size(type_info), get_name(type_info), get_name(DIE)))
-    elif is_ptr(type_info):
-        # print(type_info)
-        pointed_to_type = find_type_info(dwarf_info, get_type_value(type_info))
-        # print(pointed_to_type)
-        # TODO: get ptr size?
-        print('\t%d\t%s*\t%s' % (8, get_name(pointed_to_type), get_name(DIE)))
-    else:
-        print('Unsupported type info for %s, implement me!' % (get_name(DIE)),
-                file=sys.stderr)
-        print(type_info, file=sys.stderr)
+    type_string = get_type_string(dwarf_info, type_info)
+
+    print('\t%d\t%-20s\t%s' %
+            (get_byte_size(dwarf_info, type_info), type_string, get_name(DIE)))
 
 
 def parse_file(dwarf_info, fn_name):
