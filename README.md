@@ -25,7 +25,7 @@ clear_bit:
 arch_clear_bit:
 ```
 
-A little bit friendly than trying to understand
+A little bit friendlier than trying to understand
 `readelf --debug-dump=info *.o`.
 
 ## Dependencies
