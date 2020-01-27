@@ -90,8 +90,9 @@ def print_var(dwarf_info, DIE):
         # TODO: get ptr size?
         print('\t%d\t%s*\t%s' % (8, get_name(pointed_to_type), get_name(DIE)))
     else:
-        print('\t%s' % get_name(DIE))
-        print_type_info(type_info)
+        print('Unsupported type info for %s, implement me!' % (get_name(DIE)),
+                file=sys.stderr)
+        print(type_info, file=sys.stderr)
 
 
 def parse_file(dwarf_info, fn_name):
