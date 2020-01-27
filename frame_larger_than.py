@@ -115,17 +115,16 @@ def parse_file(dwarf_info, fn_name):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 3:
-        with open(sys.argv[1], 'rb') as f:
-            try:
-                elffile = ELFFile(f)
-                if not elffile.has_dwarf_info:
-                    print('No dwarf info found in %s' % sys.argv[1])
-                    sys.exit(1)
-                parse_file(elffile.get_dwarf_info(), sys.argv[2])
-            except ELFError as e:
-                print('failed to parse elf: %s' % e)
-                sys.exit(1)
-    else:
+    if len(sys.argv) != 3:
         print('Usage: python frame_larger_than.py <file> <function>')
         sys.exit(1)
+    with open(sys.argv[1], 'rb') as f:
+        try:
+            elffile = ELFFile(f)
+            if not bool(elffile.get_section_by_name('.debug_info')):
+                print('No dwarf info found in %s' % sys.argv[1])
+                sys.exit(1)
+            parse_file(elffile.get_dwarf_info(), sys.argv[2])
+        except ELFError as e:
+            print('failed to parse elf: %s' % e)
+            sys.exit(1)
