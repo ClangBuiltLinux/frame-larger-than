@@ -13,15 +13,15 @@ static void kvm_send_ipi_mask_allbutself(const struct cpumask *mask, int vector)
             ^
 $ python3 frame_larger_than.py arch/x86/kernel/kvm.o kvm_send_ipi_mask_allbutself
 kvm_send_ipi_mask_allbutself:
-        1024    struct cpumask  new_mask
-        4       unsigned int    this_cpu
-        8       *       local_mask
-        4       int     pscr_ret__
-        4       int     pfo_ret__
+        1024    struct cpumask          new_mask
+        4       unsigned int            this_cpu
+        8       const struct cpumask*   local_mask
+        4       int                     pscr_ret__
+        4       int                     pfo_ret__
 cpumask_copy:
 bitmap_copy:
-        4       unsigned int    len
-        4       unsigned int    len
+        4       unsigned int            len
+        4       unsigned int            len
 cpumask_clear_cpu:
 clear_bit:
 arch_clear_bit:
