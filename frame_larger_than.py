@@ -31,6 +31,10 @@ def is_const(DIE):
     return DIE.tag == 'DW_TAG_const_type'
 
 
+def is_array(DIE):
+    return DIE.tag == 'DW_TAG_array_type'
+
+
 def get_name(DIE):
     if 'DW_AT_name' in DIE.attributes:
         return DIE.attributes['DW_AT_name'].value.decode('UTF-8')
@@ -77,6 +81,9 @@ def get_type_string(dwarf_info, type_info):
     if is_ptr(type_info):
         pointed_to_type = find_type_info(dwarf_info, get_type_value(type_info))
         return get_type_string(dwarf_info, pointed_to_type) + '*'
+    elif is_array(type_info):
+        pointed_to_type = find_type_info(dwarf_info, get_type_value(type_info))
+        return get_type_string(dwarf_info, pointed_to_type) + '[]'
     elif is_const(type_info):
         pointed_to_type = find_type_info(dwarf_info, get_type_value(type_info))
         return 'const ' + get_type_string(dwarf_info, pointed_to_type)
