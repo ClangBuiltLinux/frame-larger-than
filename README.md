@@ -1,5 +1,3 @@
-readelf --debug-dump=info kvm.o
-
 # Frame Larger Than
 A python script to help debug `-Wframe-larger-than=` warnings.
 
@@ -26,6 +24,9 @@ cpumask_clear_cpu:
 clear_bit:
 arch_clear_bit:
 ```
+
+A little bit friendly than trying to understand
+`readelf --debug-dump=info *.o`.
 
 ## Dependencies
 - [pyelftools](https://github.com/eliben/pyelftools)
