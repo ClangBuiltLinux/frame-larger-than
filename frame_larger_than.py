@@ -86,9 +86,8 @@ def get_type_string(dwarf_info, type_info):
         return get_name(type_info)
     else:
         print('Unsupported type info for %s, implement me!' % (get_name(type_info)),
-                file=sys.stderr)
+              file=sys.stderr)
         print(type_info, file=sys.stderr)
-
 
 
 def print_var(dwarf_info, DIE):
@@ -103,7 +102,7 @@ def print_var(dwarf_info, DIE):
     type_string = get_type_string(dwarf_info, type_info)
 
     print('\t%d\t%-20s\t%s' %
-            (get_byte_size(dwarf_info, type_info), type_string, get_name(DIE)))
+          (get_byte_size(dwarf_info, type_info), type_string, get_name(DIE)))
 
 
 def parse_file(dwarf_info, fn_name):
