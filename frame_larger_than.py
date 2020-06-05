@@ -120,7 +120,7 @@ def print_var(dwarf_info, DIE):
     type_info = find_type_info(dwarf_info, type_value)
     type_string = get_type_string(dwarf_info, type_info)
 
-    print('\t%d\t%-20s\t%s' %
+    print('\t%d\t%-30s\t%s' %
           (get_byte_size(dwarf_info, type_info), type_string, get_name(DIE)))
 
 
