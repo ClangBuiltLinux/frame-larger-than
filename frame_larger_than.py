@@ -98,9 +98,7 @@ def get_type_string(dwarf_info, type_info):
         return 'const ' + get_type_string(dwarf_info, pointed_to_type)
     elif is_struct(type_info):
         return 'struct ' + get_name(type_info)
-    elif is_base_type(type_info):
-        return get_name(type_info)
-    elif is_typedef(type_info):
+    elif is_base_type(type_info) or is_typedef(type_info):
         return get_name(type_info)
     else:
         print('Unsupported type info for %s, implement me!' % (get_name(type_info)),
