@@ -95,6 +95,9 @@ def get_type_string(dwarf_info, type_info):
         return get_type_string(dwarf_info, pointed_to_type) + '[]'
     elif is_const(type_info):
         pointed_to_type = find_type_info(dwarf_info, get_type_value(type_info))
+        if pointed_to_type is None:
+            print('WARNING: broken DIE: ', type_info)
+            return ''
         return 'const ' + get_type_string(dwarf_info, pointed_to_type)
     elif is_struct(type_info):
         return 'struct ' + get_name(type_info)
