@@ -35,6 +35,10 @@ def is_array(DIE):
     return DIE.tag == 'DW_TAG_array_type'
 
 
+def is_typedef(DIE):
+    return DIE.tag == 'DW_TAG_typedef'
+
+
 def get_name(DIE):
     if 'DW_AT_name' in DIE.attributes:
         return DIE.attributes['DW_AT_name'].value.decode('UTF-8')
@@ -54,6 +58,9 @@ def get_byte_size(dwarf_info, DIE):
         return DIE.attributes['DW_AT_byte_size'].value
     elif is_ptr(DIE):
         return dwarf_info.config.default_address_size
+    elif is_typedef(DIE):
+        actual_type = find_type_info(dwarf_info, get_type_value(DIE))
+        return get_byte_size(dwarf_info, actual_type)
     else:
         return 0
 
@@ -92,6 +99,8 @@ def get_type_string(dwarf_info, type_info):
     elif is_struct(type_info):
         return 'struct ' + get_name(type_info)
     elif is_base_type(type_info):
+        return get_name(type_info)
+    elif is_typedef(type_info):
         return get_name(type_info)
     else:
         print('Unsupported type info for %s, implement me!' % (get_name(type_info)),
