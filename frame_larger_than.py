@@ -1,4 +1,5 @@
 import sys
+from functools import lru_cache
 # https://github.com/eliben/pyelftools
 from elftools.elf.elffile import ELFFile, ELFError
 
@@ -77,6 +78,7 @@ def is_dw_fn(DIE, fn_name):
     return is_fn(DIE) and is_fn_named(DIE, fn_name)
 
 
+@lru_cache(maxsize=None)
 def find_type_info(dwarf_info, value):
     for CU in dwarf_info.iter_CUs():
         for DIE in CU.iter_DIEs():
