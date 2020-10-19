@@ -106,7 +106,7 @@ def get_type_string(dwarf_info, type_info):
     elif is_base_type(type_info) or is_typedef(type_info):
         return get_name(type_info)
     else:
-        print('Unsupported type info for %s, implement me!' % (get_name(type_info)),
+        print('Unsupported type info for %s, implement me!' % (type_info.tag),
               file=sys.stderr)
         print(type_info, file=sys.stderr)
 
