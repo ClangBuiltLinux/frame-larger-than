@@ -48,7 +48,7 @@ def get_name(DIE):
     if 'DW_AT_name' in DIE.attributes:
         return DIE.attributes['DW_AT_name'].value.decode('UTF-8')
     else:
-        return ''
+        return '{anonymous}'
 
 
 def get_type_value(DIE):
