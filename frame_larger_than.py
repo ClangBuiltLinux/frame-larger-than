@@ -16,6 +16,10 @@ def is_struct(DIE):
     return DIE.tag == 'DW_TAG_structure_type'
 
 
+def is_union(DIE):
+    return DIE.tag == 'DW_TAG_union_type'
+
+
 def is_base_type(DIE):
     return DIE.tag == 'DW_TAG_base_type'
 
@@ -103,6 +107,8 @@ def get_type_string(dwarf_info, type_info):
         return 'const ' + get_type_string(dwarf_info, pointed_to_type)
     elif is_struct(type_info):
         return 'struct ' + get_name(type_info)
+    elif is_union(type_info):
+        return 'union ' + get_name(type_info)
     elif is_base_type(type_info) or is_typedef(type_info):
         return get_name(type_info)
     else:
