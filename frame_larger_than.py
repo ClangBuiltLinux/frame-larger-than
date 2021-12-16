@@ -44,6 +44,10 @@ def is_typedef(DIE):
     return DIE.tag == 'DW_TAG_typedef'
 
 
+def is_enum(DIE):
+    return DIE.tag == 'DW_TAG_enumeration_type'
+
+
 def get_name(DIE):
     if 'DW_AT_name' in DIE.attributes:
         return DIE.attributes['DW_AT_name'].value.decode('UTF-8')
@@ -109,6 +113,8 @@ def get_type_string(dwarf_info, type_info):
         return 'struct ' + get_name(type_info)
     elif is_union(type_info):
         return 'union ' + get_name(type_info)
+    elif is_enum(type_info):
+        return 'enum ' + get_name(type_info)
     elif is_base_type(type_info) or is_typedef(type_info):
         return get_name(type_info)
     else:
