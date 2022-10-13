@@ -42,6 +42,10 @@ def is_array(DIE):
     return DIE.tag == 'DW_TAG_array_type'
 
 
+def is_subrange(DIE):
+    return DIE.tag == 'DW_TAG_subrange_type'
+
+
 def is_typedef(DIE):
     return DIE.tag == 'DW_TAG_typedef'
 
@@ -64,6 +68,14 @@ def get_type_value(DIE):
         return 0
 
 
+def get_array_count(DIE):
+    if DIE.has_children:
+        for child in DIE.iter_children():
+            if is_subrange(child):
+                return child.attributes['DW_AT_count'].value
+    return 0
+
+
 def get_byte_size(dwarf_info, DIE):
     if 'DW_AT_byte_size' in DIE.attributes:
         return DIE.attributes['DW_AT_byte_size'].value
@@ -72,6 +84,10 @@ def get_byte_size(dwarf_info, DIE):
     elif is_typedef(DIE):
         actual_type = find_type_info(dwarf_info, get_type_value(DIE))
         return get_byte_size(dwarf_info, actual_type)
+    elif is_array(DIE):
+        num_elements = get_array_count(DIE)
+        pointed_to_type = find_type_info(dwarf_info, get_type_value(DIE))
+        return get_byte_size(dwarf_info, pointed_to_type) * num_elements
     else:
         return 0
 
@@ -103,8 +119,9 @@ def get_type_string(dwarf_info, type_info):
             return 'void*'
         return get_type_string(dwarf_info, pointed_to_type) + '*'
     elif is_array(type_info):
+        num_elements = get_array_count(type_info)
         pointed_to_type = find_type_info(dwarf_info, get_type_value(type_info))
-        return get_type_string(dwarf_info, pointed_to_type) + '[]'
+        return get_type_string(dwarf_info, pointed_to_type) + '[' + str(num_elements) + ']'
     elif is_const(type_info):
         pointed_to_type = find_type_info(dwarf_info, get_type_value(type_info))
         if pointed_to_type is None:
