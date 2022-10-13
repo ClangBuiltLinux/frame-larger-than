@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 from functools import lru_cache
 # https://github.com/eliben/pyelftools
@@ -160,7 +162,7 @@ def parse_file(dwarf_info, fn_name):
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        print('Usage: python frame_larger_than.py <file> <function>')
+        print('Usage: frame_larger_than.py <file> <function>')
         sys.exit(1)
     with open(sys.argv[1], 'rb') as f:
         try:
