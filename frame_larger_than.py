@@ -165,7 +165,7 @@ if __name__ == '__main__':
     with open(sys.argv[1], 'rb') as f:
         try:
             elffile = ELFFile(f)
-            if not bool(elffile.get_section_by_name('.debug_info')):
+            if not elffile.has_dwarf_info():
                 print('No dwarf info found in %s' % sys.argv[1])
                 sys.exit(1)
             parse_file(elffile.get_dwarf_info(), sys.argv[2])
