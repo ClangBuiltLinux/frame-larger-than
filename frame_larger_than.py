@@ -4,6 +4,9 @@ import sys
 from functools import lru_cache
 # https://github.com/eliben/pyelftools
 from elftools.elf.elffile import ELFFile, ELFError
+from elftools.dwarf.locationlists import LocationParser, LocationExpr
+from elftools.dwarf.dwarf_expr import DWARFExprParser
+from elftools.dwarf.descriptions import describe_reg_name
 
 
 def is_fn(DIE):
@@ -142,6 +145,28 @@ def get_type_string(dwarf_info, type_info):
         print(type_info, file=sys.stderr)
 
 
+# Check out
+# https://github.com/eliben/pyelftools/blob/097257942a8eb4fa76b37df4abdf4d2298bb9726/scripts/dwarfdump.py#L181
+def get_location(dwarf_info, DIE):
+    if 'DW_AT_location' in DIE.attributes:
+        location = DIE.attributes['DW_AT_location']
+        location_parser = LocationParser(dwarf_info.location_lists())
+        loclist = location_parser.parse_from_attribute(
+            location, DIE.cu.header.version, DIE)
+        if isinstance(loclist, LocationExpr):
+            exprparser = DWARFExprParser(DIE.cu.structs)
+            parsed = exprparser.parse_expr(loclist.loc_expr)
+            for dwarf_expr_op in parsed:
+                reg = describe_reg_name(
+                    dwarf_expr_op.op - 0x70, DIE.cu.dwarfinfo.config.machine_arch, True).upper()
+                offset = str(dwarf_expr_op.args[0])
+                # TODO: this assume only one location. What if there's more
+                # than one, such as if a variable were spilled to different
+                # locations?
+                return reg + '+' + offset
+    return ''
+
+
 def print_var(dwarf_info, DIE):
     # print(DIE)
     if is_abstract(DIE):
@@ -153,8 +178,9 @@ def print_var(dwarf_info, DIE):
     type_info = find_type_info(dwarf_info, type_value)
     type_string = get_type_string(dwarf_info, type_info)
 
-    print('\t%d\t%-30s\t%s' %
-          (get_byte_size(dwarf_info, type_info), type_string, get_name(DIE)))
+    print('\t%d\t%-30s\t%-30s\t%s' %
+          (get_byte_size(dwarf_info, type_info), type_string, get_name(DIE),
+           get_location(dwarf_info, DIE)))
 
 
 def parse_file(dwarf_info, fn_name):
