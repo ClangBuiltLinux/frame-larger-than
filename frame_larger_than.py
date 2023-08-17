@@ -84,7 +84,7 @@ def get_byte_size(dwarf_info, DIE):
         return DIE.attributes['DW_AT_byte_size'].value
     elif is_ptr(DIE):
         return dwarf_info.config.default_address_size
-    elif is_typedef(DIE):
+    elif is_typedef(DIE) or is_const(DIE):
         actual_type = find_type_info(dwarf_info, get_type_value(DIE))
         return get_byte_size(dwarf_info, actual_type)
     elif is_array(DIE):
